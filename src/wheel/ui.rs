@@ -22,37 +22,36 @@ pub fn wheel(props: &WheelProps) -> Html {
         let set_angle = angle.clone();
         let spin_duration = props.spin_duration;
 
-        let is_spinning_value = *is_spinning; // Store the current value
-
-        // Теперь замыкание больше не использует move
         Callback::from({
             let set_is_spinning = set_is_spinning.clone();
             let set_angle = set_angle.clone();
+            let is_spinning_clone = is_spinning.clone();
             move |_: MouseEvent| {
-                if is_spinning_value {
+                if *is_spinning_clone {
                     return; // Если уже вращается, не запускаем снова
                 }
 
                 set_is_spinning.set(true); // запускаем вращение
                 let end_angle = rand::thread_rng().gen_range(720.0..1440.0); // случайный угол
 
+                // Добавляем CSS-анимацию для вращения
+                set_angle.set(end_angle % 360.0); // Сразу обновляем угол
+
                 // Запускаем таймер для завершения вращения
                 Timeout::new(spin_duration as u32, {
-                    let set_angle = set_angle.clone();
                     let set_is_spinning = set_is_spinning.clone();
                     move || {
-                        set_angle.set(end_angle % 360.0); // обновляем угол вращения
                         set_is_spinning.set(false); // останавливаем вращение
                     }
                 })
-                    .forget(); // Не забываем забыть таймер
+                    .forget();
             }
         })
     };
 
     html! {
-        <div>
-            <svg viewBox="0 0 200 200" width="300" height="300"
+        <div class="wheel-container">
+            <svg class="wheel-svg" viewBox="0 0 200 200" width="300" height="300"
                 style={format!(
                     "transform: rotate({}deg); transition: transform {}ms cubic-bezier(0.42, 0, 0.58, 1);",
                     *angle,  // разыменовываем angle
@@ -71,7 +70,7 @@ pub fn wheel(props: &WheelProps) -> Html {
 
                         html! {
                             <>
-                                <path
+                                <path class="wheel-segment"
                                     d={format!(
                                         "M100,100 L{} {} A95,95 0 0,1 {} {} Z",
                                         100.0 + 95.0 * start_angle.to_radians().cos(),
@@ -80,7 +79,7 @@ pub fn wheel(props: &WheelProps) -> Html {
                                         100.0 + 95.0 * end_angle.to_radians().sin()
                                     )}
                                     fill={format!("hsl({}, 70%, 80%)", i * 360 / props.items.len())} />
-                                <text x={x.to_string()} y={y.to_string()} text-anchor="middle" dominant-baseline="middle" font-size="12">
+                                <text class="wheel-text" x={x.to_string()} y={y.to_string()} text-anchor="middle" dominant-baseline="middle" font-size="12">
                                     { item }
                                 </text>
                             </>
@@ -88,7 +87,7 @@ pub fn wheel(props: &WheelProps) -> Html {
                     }).collect::<Html>()
                 }
             </svg>
-            <button onclick={on_spin} disabled={*is_spinning}>{ "Spin the Wheel!" }</button>
+            <button class="wheel-button" onclick={on_spin} disabled={*is_spinning}>{ "Spin the Wheel!" }</button>
         </div>
     }
 }
