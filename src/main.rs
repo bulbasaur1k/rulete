@@ -1,6 +1,7 @@
 mod app;
 mod matcher;
 mod wheel;
+mod ui;
 
 use app::App;
 

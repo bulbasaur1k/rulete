@@ -5,6 +5,7 @@
   align-items: center;
   justify-content: center;
   margin: 20px;
+  position: relative;
 }
 
 /* Стили для SVG (колесо) */
@@ -44,4 +45,16 @@
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: none;
+}
+.pointer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 20px solid red;
+  z-index: 10;
 }
