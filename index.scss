@@ -1,4 +1,7 @@
 /* Стили для контейнера с колесом */
+* {
+  font-family: -apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,Arial,sans-serif;
+}
 .wheel-container {
   display: flex;
   flex-direction: column;
@@ -70,6 +73,7 @@
   pointer-events: none;
   fill: #555;
   font-weight: bold;
+  text-shadow: 1px 1px 2px #ffffff, -1px -1px 2px #cccccc;
 }
 
 /* Стили для стрелки указателя */

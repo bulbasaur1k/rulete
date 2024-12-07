@@ -9,14 +9,14 @@ fn hex_to_rgb(hex: &str) -> Result<Srgb<f32>, ParseIntError> {
     Ok(Srgb::new(r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0))
 }
 
-pub fn generate_pastel_colors(count: usize) -> Vec<String> {
+pub fn generate_neumorphism_colors(count: usize) -> Vec<String> {
     let mut unique_colors = Vec::new();
     let step = 360.0 / count as f32; // Угловое смещение по кругу
-    let saturation = 0.6; // Уменьшаем насыщенность для пастельных цветов
-    let lightness = 0.8;  // Увеличиваем светлоту для мягкости
+    let saturation = 0.4; // Низкая насыщенность для приглушённых оттенков
+    let lightness = 0.80; // Высокая светлота для мягкого эффекта
 
     for i in 0..count {
-        let hue = (i as f32 * step) % 360.0; // Распределяем hue равномерно по кругу
+        let hue = (i as f32 * step) % 360.0; // Распределяем hue равномерно
         let new_color = Hsl::new(RgbHue::from_degrees(hue), saturation, lightness);
         let rgb: Srgb = new_color.into_color();
         unique_colors.push(format!(

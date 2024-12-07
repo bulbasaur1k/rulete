@@ -1,4 +1,4 @@
-use crate::ui::color_generator::generate_pastel_colors;
+use crate::ui::color_generator::generate_neumorphism_colors;
 use gloo::timers::callback::Timeout;
 use rand::Rng;
 use yew::prelude::{function_component, html, use_state, Callback, Html, MouseEvent, Properties};
@@ -22,13 +22,19 @@ pub fn wheel(props: &WheelProps) -> Html {
     // Используем UseStateHandle для хранения угла и флага вращения
     let angle = use_state(|| 0.0);
     let is_spinning = use_state(|| false);
-    let colors = generate_pastel_colors(_name_counts);
+    let colors = generate_neumorphism_colors(_name_counts);
 
     fn calculate_text_position(angle: f64) -> (f64, f64) {
-        let x = 100.0 + 80.0 * angle.to_radians().cos();
-        let y = 100.0 + 80.0 * angle.to_radians().sin();
+        // Задаем радиус, на котором будет располагаться текст
+        let radius = 80.0;
+
+        // Позиция текста вдоль луча, от центра к краю
+        let x = 100.0 + radius * angle.to_radians().cos();
+        let y = 100.0 + radius * angle.to_radians().sin();
+
         (x, y)
     }
+
 
     // Функция для генерации пути сектора колеса
     fn generate_sector_path(start_angle: f64, end_angle: f64) -> String {
