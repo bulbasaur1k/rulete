@@ -1,4 +1,4 @@
-use crate::ui::color_generator::get_unique_colors;
+use crate::ui::color_generator::generate_pastel_colors;
 use gloo::timers::callback::Timeout;
 use rand::Rng;
 use yew::prelude::{function_component, html, use_state, Callback, Html, MouseEvent, Properties};
@@ -11,8 +11,9 @@ pub struct WheelProps {
     pub items: Vec<String>,
 }
 const CIRCLE: f64 = 360.0;
-const FACTOR: f64 = 5.0;
 const SPINS: u32 = 5;
+
+const SPIN_DURATION: u32 = 8000;
 #[function_component(Wheel)]
 pub fn wheel(props: &WheelProps) -> Html {
     let _name_counts = props.items.len();
@@ -21,8 +22,7 @@ pub fn wheel(props: &WheelProps) -> Html {
     // Используем UseStateHandle для хранения угла и флага вращения
     let angle = use_state(|| 0.0);
     let is_spinning = use_state(|| false);
-    let spin_duration = *angle * FACTOR;
-    let colors = get_unique_colors(_name_counts);
+    let colors = generate_pastel_colors(_name_counts);
 
     fn calculate_text_position(angle: f64) -> (f64, f64) {
         let x = 100.0 + 80.0 * angle.to_radians().cos();
@@ -67,7 +67,7 @@ pub fn wheel(props: &WheelProps) -> Html {
                 set_angle.set(*set_angle + end_angle);
 
                 // Устанавливаем таймер для завершения вращения
-                Timeout::new(spin_duration as u32, {
+                Timeout::new(SPIN_DURATION, {
                     let set_is_spinning = set_is_spinning.clone();
                     move || {
                         set_is_spinning.set(false); // Останавливаем вращение
@@ -80,12 +80,13 @@ pub fn wheel(props: &WheelProps) -> Html {
 
     html! {
         <div class="wheel-container">
-        <div class="pointer"></div>
+            <div class="pointer"></div>
+            <div class="wheel-shadow"></div>
             <svg class="wheel-svg" viewBox="0 0 200 200" width="300" height="300"
                 style={format!(
                     "transform: rotate({}deg); transition: transform {}ms cubic-bezier(0.42, 0, 0.58, 1);",
                     *angle,  // Текущий угол вращения
-                    spin_duration// Время вращения
+                    SPIN_DURATION// Время вращения
                 )}>
                 <circle cx="100" cy="100" r="95" fill="white" />
                 {
