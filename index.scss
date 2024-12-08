@@ -2,6 +2,32 @@
 * {
   font-family: -apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,Arial,sans-serif;
 }
+/* Стили для Neumorphism эффекта для сегментов */
+.wheel-segment {
+  fill: none;  /* Убираем заливку */
+  stroke: #FFC700; /* Жёлтая обводка */
+  stroke-width: 2; /* Толщина обводки */
+  filter:
+          drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.2))
+          drop-shadow(-2px -2px 5px rgba(255, 255, 255, 0.3)); /* Эффект Neumorphism */
+  transition: all 0.3s ease;  /* Плавные изменения */
+}
+
+.wheel-segment:hover {
+  filter:
+          drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.3))
+          drop-shadow(-3px -3px 6px rgba(255, 255, 255, 0.4)); /* Более выраженный эффект при наведении */
+}
+
+/* Стиль для текста */
+.wheel-text {
+  font-size: 12px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+}
+
+/* Окружение для контейнера с колесом */
 .wheel-container {
   display: flex;
   flex-direction: column;
@@ -9,15 +35,12 @@
   justify-content: center;
   margin: 20px;
   position: relative;
-  background: #f0f0f3;
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 20px 20px 60px #d9d9d9, -20px -20px 60px #ffffff;
 }
+
 /* Статичная тень под колесом */
 .wheel-shadow {
   position: absolute;
-  top: 27px;
+  top: 8px;
   width: 285px;
   height: 285px;
   background: radial-gradient(circle, rgba(0, 0, 0, 0.2), transparent);
@@ -65,17 +88,7 @@
   cursor: not-allowed;
 }
 
-/* Стили для текста в сегментах */
-.wheel-text {
-  font-size: 9px;
-  text-anchor: middle;
-  dominant-baseline: middle;
-  pointer-events: none;
-  fill: #555;
-  font-weight: bold;
-  z-index: 20;
-  text-shadow: 1px 1px 2px #ffffff, -1px -1px 2px #cccccc;
-}
+
 
 /* Стили для стрелки указателя */
 .pointer {

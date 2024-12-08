@@ -111,19 +111,13 @@ pub fn wheel(props: &WheelProps) -> Html {
                    props.items.iter().enumerate().map(|(i, item)| {
                         let start_angle = i as f64 * sector_angle;
                         let end_angle = start_angle + sector_angle;
-                        let (x, y) = calculate_text_position(start_angle + sector_angle / 2.0);
-                        let path_id = format!("clip-path-{}", i);
                         html! {
                             <>
-                                <path class="wheel-segment"
-                                    d={generate_sector_path(start_angle, end_angle)}
-                                    fill={colors.get(i).unwrap_or(&"#F45725".to_string()).to_string()}
-                                />
-
+                                <path class="wheel-segment" 
+                                    d={generate_sector_path(start_angle, end_angle)} />
                                 <text class="wheel-text"
                                     text-anchor="middle"
                                     dominant-baseline="middle"
-                                    font-size="12"
                                     transform={format!(
                                         "translate({:.2},{:.2}) rotate({:.2})",
                                         100.0 + 60.0 * ((start_angle + sector_angle / 2.0).to_radians().cos()),
