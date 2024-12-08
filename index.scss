@@ -67,12 +67,13 @@
 
 /* Стили для текста в сегментах */
 .wheel-text {
-  font-size: 12px;
+  font-size: 9px;
   text-anchor: middle;
   dominant-baseline: middle;
   pointer-events: none;
   fill: #555;
   font-weight: bold;
+  z-index: 20;
   text-shadow: 1px 1px 2px #ffffff, -1px -1px 2px #cccccc;
 }
 

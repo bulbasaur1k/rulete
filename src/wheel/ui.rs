@@ -35,6 +35,18 @@ pub fn wheel(props: &WheelProps) -> Html {
         (x, y)
     }
 
+    fn generate_text_path(start_angle: f64, end_angle: f64) -> String {
+        let radius = 70.0; // Радиус текста, ближе к центру сегмента
+        format!(
+            "M{} {} A{} {} 0 0,1 {} {}",
+            100.0 + radius * start_angle.to_radians().cos(),
+            100.0 + radius * start_angle.to_radians().sin(),
+            radius,
+            radius,
+            100.0 + radius * end_angle.to_radians().cos(),
+            100.0 + radius * end_angle.to_radians().sin(),
+        )
+    }
 
     // Функция для генерации пути сектора колеса
     fn generate_sector_path(start_angle: f64, end_angle: f64) -> String {
@@ -100,13 +112,24 @@ pub fn wheel(props: &WheelProps) -> Html {
                         let start_angle = i as f64 * sector_angle;
                         let end_angle = start_angle + sector_angle;
                         let (x, y) = calculate_text_position(start_angle + sector_angle / 2.0);
+                        let path_id = format!("clip-path-{}", i);
                         html! {
                             <>
                                 <path class="wheel-segment"
                                     d={generate_sector_path(start_angle, end_angle)}
                                     fill={colors.get(i).unwrap_or(&"#F45725".to_string()).to_string()}
                                 />
-                                <text class="wheel-text" x={x.to_string()} y={y.to_string()} text-anchor="middle" dominant-baseline="middle" font-size="12">
+
+                                <text class="wheel-text"
+                                    text-anchor="middle"
+                                    dominant-baseline="middle"
+                                    font-size="12"
+                                    transform={format!(
+                                        "translate({:.2},{:.2}) rotate({:.2})",
+                                        100.0 + 60.0 * ((start_angle + sector_angle / 2.0).to_radians().cos()),
+                                        100.0 + 60.0 * ((start_angle + sector_angle / 2.0).to_radians().sin()),
+                                        start_angle + sector_angle / 2.0 + 180.0 // Корректируем угол для ориентации "наружу"
+                                    )}>
                                     { item }
                                 </text>
                             </>
