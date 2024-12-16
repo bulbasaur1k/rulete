@@ -6,7 +6,7 @@ use crate::wheel::ui::{Wheel};
 pub fn app() -> Html {
     html! {
         <main>
-            <Wheel items={vec!["King Artur", "bulbasaur", "Rust", "Four", "Five", "Six", "Seven", "Ustalovich"].into_iter().map(String::from).collect::<Vec<String>>()} />
+            <Wheel items={vec!["Андрей", "Артур", "Алексей", "Александр Ш", "Александр Б", "Евгений П", "Евгений Н", "Вадим", "Константин", "Петр", "Рустем", "Сергей", "Даниил"].into_iter().map(String::from).collect::<Vec<String>>()} />
         </main>
     }
 }

@@ -1,7 +1,11 @@
 use crate::ui::color_generator::generate_neumorphism_colors;
 use gloo::timers::callback::Timeout;
+use gloo_console::log;
+use gloo_storage::{LocalStorage, Storage};
 use rand::Rng;
 use yew::prelude::{function_component, html, use_state, Callback, Html, MouseEvent, Properties};
+use serde::{Deserialize, Serialize};
+use yew::{use_effect, use_effect_with, UseStateHandle};
 
 //#FFC700 yellow
 //#4AC99B green
@@ -10,43 +14,85 @@ use yew::prelude::{function_component, html, use_state, Callback, Html, MouseEve
 pub struct WheelProps {
     pub items: Vec<String>,
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+struct KeyValue {
+    key: String,
+    value: f64,
+}
+
 const CIRCLE: f64 = 360.0;
 const SPINS: u32 = 5;
-
+const STORAGE_KEY: &str = "vba_team";
 const SPIN_DURATION: u32 = 8000;
+
+fn update_item_by_key(key: &str, new_value: f64, items: &UseStateHandle<Vec<KeyValue>>) {
+    // Clone the current state into an owned vector
+    let mut updated_items = (**items).clone();
+
+    // Find the item by key and update it
+    if let Some(item) = updated_items.iter_mut().find(|item| item.key == key) {
+        item.value = new_value;
+    }
+
+    // Update LocalStorage
+    LocalStorage::set(STORAGE_KEY, &updated_items).expect("Failed to update LocalStorage");
+
+    // Update the state
+    items.set(updated_items);
+}
+
+fn log_items_on_change(items: &UseStateHandle<Vec<KeyValue>>) {
+    use_effect_with(
+        items.clone(),
+        {
+            let items = items.clone();
+            move |_| {
+                // Логируем текущее состояние items в консоль
+                log!(format!("Items updated: {:?}", *items));
+
+                // Возвращаем функцию очистки, если требуется (в данном случае нет)
+                || ()
+            }
+        }
+    );
+}
+
 #[function_component(Wheel)]
 pub fn wheel(props: &WheelProps) -> Html {
     let _name_counts = props.items.len();
     let sector_angle = CIRCLE / _name_counts as f64;
+    let items = use_state(|| vec![] as Vec<KeyValue>);
+    log_items_on_change(&items);
+    use_effect_with((), {
+        let items_clone = props.items.clone(); // Clone props.items
+        let items = items.clone(); // Clone items state handle for use in the closure
+
+        move |_| {
+            let initial_items: Vec<KeyValue> = LocalStorage::get(STORAGE_KEY).unwrap_or_else(|_| vec![]);
+
+            if initial_items.is_empty() {
+                let res: Vec<KeyValue> = items_clone
+                    .iter()
+                    .map(|s| KeyValue {
+                        key: s.to_string(),
+                        value: 0.1f64,
+                    })
+                    .collect();
+                items.set(res);
+            } else {
+                items.set(initial_items);
+            }
+
+            || {} // Cleanup callback (no-op in this case)
+        }
+    });
+
 
     // Используем UseStateHandle для хранения угла и флага вращения
     let angle = use_state(|| 0.0);
     let is_spinning = use_state(|| false);
     let colors = generate_neumorphism_colors(_name_counts);
-
-    fn calculate_text_position(angle: f64) -> (f64, f64) {
-        // Задаем радиус, на котором будет располагаться текст
-        let radius = 80.0;
-
-        // Позиция текста вдоль луча, от центра к краю
-        let x = 100.0 + radius * angle.to_radians().cos();
-        let y = 100.0 + radius * angle.to_radians().sin();
-
-        (x, y)
-    }
-
-    fn generate_text_path(start_angle: f64, end_angle: f64) -> String {
-        let radius = 70.0; // Радиус текста, ближе к центру сегмента
-        format!(
-            "M{} {} A{} {} 0 0,1 {} {}",
-            100.0 + radius * start_angle.to_radians().cos(),
-            100.0 + radius * start_angle.to_radians().sin(),
-            radius,
-            radius,
-            100.0 + radius * end_angle.to_radians().cos(),
-            100.0 + radius * end_angle.to_radians().sin(),
-        )
-    }
 
     // Функция для генерации пути сектора колеса
     fn generate_sector_path(start_angle: f64, end_angle: f64) -> String {
@@ -108,13 +154,14 @@ pub fn wheel(props: &WheelProps) -> Html {
                 )}>
                 <circle cx="100" cy="100" r="95" fill="white" />
                 {
-                   props.items.iter().enumerate().map(|(i, item)| {
+                   items.iter().enumerate().map(|(i, item)| {
                         let start_angle = i as f64 * sector_angle;
                         let end_angle = start_angle + sector_angle;
                         html! {
                             <>
-                                <path class="wheel-segment" 
-                                    d={generate_sector_path(start_angle, end_angle)} />
+                                <path class="wheel-segmen" 
+                                    d={generate_sector_path(start_angle, end_angle)}
+                                    fill={colors[i].to_string()} />
                                 <text class="wheel-text"
                                     text-anchor="middle"
                                     dominant-baseline="middle"
@@ -124,7 +171,7 @@ pub fn wheel(props: &WheelProps) -> Html {
                                         100.0 + 60.0 * ((start_angle + sector_angle / 2.0).to_radians().sin()),
                                         start_angle + sector_angle / 2.0 + 180.0 // Корректируем угол для ориентации "наружу"
                                     )}>
-                                    { item }
+                                    { item.key.clone() }
                                 </text>
                             </>
                         }
