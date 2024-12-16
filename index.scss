@@ -1,6 +1,7 @@
 /* Стили для контейнера с колесом */
 * {
   font-family: -apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,Arial,sans-serif;
+  overflow: hidden;
 }
 /* Стили для Neumorphism эффекта для сегментов */
 .wheel-segment {
@@ -12,7 +13,7 @@
 
 /* Стиль для текста */
 .wheel-text {
-  font-size: 7px;
+  font-size: 9.8px;
   text-anchor: middle;
   pointer-events: none;
 }
@@ -30,9 +31,9 @@
 /* Статичная тень под колесом */
 .wheel-shadow {
   position: absolute;
-  top: 9px;
-  width: calc(400px - 1.4rem);
-  height: calc(400px - 1.4rem);
+  top: 14px;
+  width: calc(620px - 1.9rem);
+  height: calc(620px - 1.9rem);
   background: radial-gradient(circle, rgba(0, 0, 0, 0.2), transparent);
   border-radius: 50%;
   z-index: 0;
@@ -40,8 +41,8 @@
 }
 /* Стили для SVG (колесо) */
 .wheel-svg {
-  width: 400px;
-  height: 400px;
+  width: 620px;
+  height: 620px;
   transform-origin: center center; /* Центрируем вращение */
   transition: transform 1s cubic-bezier(0.42, 0, 0.58, 1); /* Плавное вращение */
   border-radius: 50%;
